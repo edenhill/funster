@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.3.5/svg.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            rimsize = 3
+            sprsize = 2.5
+            maxvs = 5
+            maxhs = 5
+
+            draw = SVG('drawing').size(800, 800)
+            draw.viewbox(0, 0, 200, 200)
+            frame = draw.rect(0, 0).attr({ fill: 'white', stroke: 'black' })
+            win = draw.rect(0, 0).attr({ fill: 'white', stroke: 'black' })
+
+            maxpanes = maxvs * maxhs
+            pane = Array()
+            for (i = 0 ; i <= maxpanes ; i++) {
+                pane[i] = draw.rect(0, 0).attr({ fill: 'white', stroke: 'black' }).hide()
+            }
+
+            update_fun()
+        };
+
+        function update_fun() {
+            w = parseInt(SVG.get('fw').node.value)
+            h = parseInt(SVG.get('fh').node.value)
+            vs = parseInt(SVG.get('vs').node.value)
+            hs = parseInt(SVG.get('hs').node.value)
+            sw = parseInt(SVG.get('sw').node.value)
+            ow = parseInt(SVG.get('ow').node.value)
+            xw = parseInt(SVG.get('xw').node.value)
+
+
+            // Resize frame
+            frame.size(w, h)
+            ratio = h / w
+
+            // Resize window
+            ww = w - (xw * 2)
+            wh = h - (xw * 2)
+            win.size(ww, wh)
+            win.x(xw)
+            win.y(xw)
+
+            // Calculate pane (rut) size
+            pw = (ww - (ow * 2) - (vs * sw)) / (vs + 1)
+            ph = (wh - (ow * 2) - (hs * sw)) / (hs + 1)
+            paneratio = ph / pw
+
+            SVG.get('dimtxt').node.innerHTML = "BxH: " + w + "x" + h + "<br>Ratio: " + ratio + "<br>Rut-ratio: " + paneratio
+
+            // Panes: Place, size and show
+            pi = 0
+            for (row = 0 ; row < hs + 1 ; row++) {
+                for (col = 0 ; col < vs + 1 ; col++) {
+                    xpos = xw + ow + (col * pw) + (col * sw)
+                    ypos = xw + ow + (row * ph) + (row * sw)
+                    pane[pi].x(xpos)
+                    pane[pi].y(ypos)
+                    pane[pi].size(pw, ph)
+                    pane[pi].show()
+                    pi++
+                }
+            }
+
+            for (; pi < maxpanes ; pi++) {
+                pane[pi].hide()
+            }
+        }
+
+
+    </script>
+<body>
+    <p>Mått: <span id="dimtxt"></span></p>
+    <table border"0">
+    <tr>
+    <td>Bredd</td>
+    <td><input text="Width" id="fw" type="range"/ min="1" max="200" value="80" oninput="update_fun()" onchange="update_fun() ; this.title = this.value"></td>
+    </tr>
+     <tr>
+    <td>Höjd</td>
+        <td><input text="Height" id="fh" type="range"/ min="1" max="200" value="100" oninput="update_fun()" onchange="update_fun() ; this.title = this.value"></td>
+    </tr>
+        <tr>
+    <td>Spröjsbredd</td>
+        <td><input text="Height" id="sw" type="range"/ min="1" max="5" value="2.5" step=0.5 oninput="update_fun()" onchange="update_fun() ; this.title = this.value">
+        </td>
+            </tr>
+        <tr>
+    <td>Bågbredd</td>
+        <td><input text="Height" id="ow" type="range"/ min="1" max="5" value="3" step=0.5 oninput="update_fun()" onchange="update_fun() ; this.title = this.value">
+        </td>
+            </tr>
+        <tr>
+    <td>Karmbredd</td>
+        <td><input text="Height" id="xw" type="range"/ min="1" max="5" value="3" step=0.5 oninput="update_fun()" onchange="update_fun() ; this.title = this.value">
+        </td>
+            </tr>
+        <tr>
+    <td>V Spröjs</td>
+        <td><input text="Height" id="vs" type="range"/ min="0" max="3" value="1" oninput="update_fun()" onchange="update_fun() ; this.title = this.value">
+        </td>
+            </tr>
+        <tr>
+    <td>H Spröjs</td>
+        <td><input text="Height" id="hs" type="range"/ min="0" max="5" value="2" oninput="update_fun()" onchange="update_fun() ; this.title = this.value">
+        </td>
+            </tr>
+        </table>
+
+    <div id="drawing" width="100%" height="100%"></div>
+</body>
+</html>
